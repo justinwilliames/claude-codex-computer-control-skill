@@ -26,7 +26,7 @@ Engine B is a bridge to OpenAI Codex. The wrapper at `scripts/codex-cu.sh` drive
 ## Prerequisites
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) installed and configured
-- **For Claude in Chrome**: the Claude for Chrome extension installed and connected
+- **For Claude in Chrome**: the Claude for Chrome extension installed and connected in a Chromium browser (Chrome, Dia, Arc, Brave, or Edge — `scripts/browser-detect.sh` finds your primary one)
 - **For the Codex bridge**: [OpenAI Codex CLI](https://github.com/openai/codex) installed and signed in; for `gui`, the `computer-use@openai-bundled` plugin installed and macOS **Accessibility + Screen Recording** granted to "Codex Computer Use" (see `references/setup.md`)
 
 ## Installation
@@ -58,6 +58,7 @@ scripts/codex-cu.sh web "Open localhost:3000, run checkout, screenshot any error
 
 - `SKILL.md` — routing rules and engine usage (the intelligence)
 - `scripts/codex-cu.sh` — the Codex-engine wrapper
+- `scripts/browser-detect.sh` — finds the primary / running Chromium browser for Claude in Chrome
 - `references/setup.md` — Codex plugin install, macOS permissions, the verified CLI gotchas
 
 ## License

@@ -127,17 +127,24 @@ tools. This is the first choice for any web task — it's lower-latency, keeps C
 loop, and can read the DOM / network / console directly.
 
 **Requirements**
-- The **Claude for Chrome extension** installed and signed in to the same account, with Chrome running.
-- A browser **connected and selected** for the session.
+- The **Claude for Chrome extension** installed and signed in to the same account as this session, in a
+  running Chromium browser — **Chrome, Dia, Arc, Brave, or Edge** (it is *not* Chrome-only).
+- That browser **connected and selected** for the session.
 
-**Availability check (do this before assuming the engine works)**
+**Availability check — primary browser + existing instances, retry before giving up**
 ```
-mcp__Claude_in_Chrome__list_connected_browsers   # [] means nothing connected
-mcp__Claude_in_Chrome__select_browser            # pick a deviceId before acting
+scripts/browser-detect.sh                        # installed / running / default Chromium browsers
+mcp__Claude_in_Chrome__list_connected_browsers   # [] means nothing connected to this session
+scripts/browser-detect.sh ensure                 # focus/launch the primary  (or: ensure "Dia")
+mcp__Claude_in_Chrome__select_browser            # pick a deviceId once one appears
 ```
-If `list_connected_browsers` returns `[]`, the engine is unavailable: ask the user to open Chrome with
-the extension, or fall back to Codex `web` for local/dev pages. (Checked 2026-06-08: returned `[]` —
-extension not connected at build time.)
+Never fold on the first empty result. Run `browser-detect.sh` to find the primary/running Chromium
+browser (the extension may live in Dia / Arc / Brave / Edge, not Chrome), `ensure` it's frontmost, then
+re-check `list_connected_browsers` up to ~3 times — the extension takes a moment to register. Only if it
+stays empty is the engine unavailable: then ask the user to click the extension and **Connect** it to
+this session (or check for an account mismatch), or fall back to Codex `web`. (Checked 2026-06-08: Dia is
+the default browser and was running, but the extension was not connected to this session —
+`list_connected_browsers` returned `[]`. The Connect step is the gate, not browser detection.)
 
 **Capabilities**: navigate, find, read_page / get_page_text, form_input, `computer` (click/type/scroll/
 screenshot), tabs create/close/context, javascript_tool, read_console_messages, read_network_requests,

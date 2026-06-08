@@ -11,7 +11,7 @@ The single entry point for **driving a screen** — a web page, a browser, or a 
 
 | Engine | What it is | Drives | Best for |
 |--------|-----------|--------|----------|
-| **Claude in Chrome** | *You* drive a real Chrome browser directly via the `Claude in Chrome` MCP tools | A Chrome browser (the user's, via the extension) | Anything on the web — the default |
+| **Claude in Chrome** | *You* drive a real Chromium browser directly via the `Claude in Chrome` MCP tools | Chrome, Dia, Arc, Brave or Edge (via the extension) | Anything on the web — the default |
 | **Codex bridge** *(Codex Computer Use)* | A **bridge to OpenAI Codex** — delegates via the `{base}/scripts/codex-cu.sh` wrapper | `gui`: the whole macOS desktop · `web`: Codex's in-app browser | Native apps; Codex-coupled web QA |
 | **AppleScript** (`osascript`) | Scripted Mac automation, no GUI loop | macOS apps that expose scripting | Deterministic, no-visual-judgement tasks |
 
@@ -48,12 +48,17 @@ Walk this top to bottom and **stop at the first match**:
 
 ## Engine A — Claude in Chrome (default for web)
 
-You drive Chrome yourself through the `Claude in Chrome` MCP tools — no script, no delegation:
-`navigate`, `find`, `read_page`, `get_page_text`, `form_input`, `computer` (click / type / scroll / screenshot), `tabs_create_mcp` / `tabs_close_mcp` / `tabs_context_mcp`, `javascript_tool`, `read_console_messages`, `read_network_requests`, `file_upload`, `browser_batch`.
+You drive the browser yourself through the `Claude in Chrome` MCP tools — no script, no delegation. The extension works in **any Chromium browser** (Chrome, Dia, Arc, Brave, Edge), so never assume it's Chrome. Tools: `navigate`, `find`, `read_page`, `get_page_text`, `form_input`, `computer` (click / type / scroll / screenshot), `tabs_create_mcp` / `tabs_close_mcp` / `tabs_context_mcp`, `javascript_tool`, `read_console_messages`, `read_network_requests`, `file_upload`, `browser_batch`.
 
-**Check availability first** — it needs the Claude for Chrome extension connected:
-1. `list_connected_browsers` → if it returns `[]`, no browser is connected. Ask Sir to open Chrome with the extension, or fall back to Codex `web`.
-2. `select_browser` / `switch_browser` to choose the target before acting.
+**Check availability — primary browser + existing instances, and retry before giving up.** Never fold on a single empty result:
+
+1. **Existing instances first** — `list_connected_browsers`.
+   - Non-empty → `select_browser` (prefer one on this computer; if several, the system default — `browser-detect.sh` flags which). Then act.
+2. **Empty on the first try → do NOT stop:**
+   - a. `{base}/scripts/browser-detect.sh` — shows which Chromium browsers are installed, **running**, and the system **default** (the extension may live in Dia / Arc / Brave / Edge, not Chrome).
+   - b. Bring the primary frontmost — `{base}/scripts/browser-detect.sh ensure` (the default Chromium), or `ensure "Dia"` for a specific running browser the extension may be in.
+   - c. **Re-run `list_connected_browsers`, retrying up to ~3 times** — the extension can take a moment to register after its browser is focused or launched.
+3. **Still empty after retries** → only now ask the user to click the **Claude for Chrome** extension in the relevant browser and **Connect** it to this session (and confirm it's signed into this session's account), or fall back to Codex `web`.
 
 Then act directly. Prefer `read_page` / `get_page_text` for reading, `form_input` or `computer` for acting, `browser_batch` to chain steps efficiently. **Permission rules still apply**: don't submit forms, accept terms/consent, grant OAuth, or click irreversible controls (send / publish / delete / purchase) without Sir's explicit go-ahead.
 
