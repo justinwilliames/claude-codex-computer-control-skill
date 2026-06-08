@@ -131,20 +131,27 @@ loop, and can read the DOM / network / console directly.
   running Chromium browser — **Chrome, Dia, Arc, Brave, or Edge** (it is *not* Chrome-only).
 - That browser **connected and selected** for the session.
 
-**Availability check — primary browser + existing instances, retry before giving up**
+**Availability check — primary browser + existing instances, actively pair before giving up**
 ```
 scripts/browser-detect.sh                        # installed / running / default Chromium browsers
-mcp__Claude_in_Chrome__list_connected_browsers   # [] means nothing connected to this session
+mcp__Claude_in_Chrome__list_connected_browsers   # shows ALREADY-paired browsers; [] = none yet
 scripts/browser-detect.sh ensure                 # focus/launch the primary  (or: ensure "Dia")
+mcp__Claude_in_Chrome__switch_browser            # ACTIVE: broadcast a pairing request, wait ~2m for Connect
 mcp__Claude_in_Chrome__select_browser            # pick a deviceId once one appears
 ```
-Never fold on the first empty result. Run `browser-detect.sh` to find the primary/running Chromium
-browser (the extension may live in Dia / Arc / Brave / Edge, not Chrome), `ensure` it's frontmost, then
-re-check `list_connected_browsers` up to ~3 times — the extension takes a moment to register. Only if it
-stays empty is the engine unavailable: then ask the user to click the extension and **Connect** it to
-this session (or check for an account mismatch), or fall back to Codex `web`. (Checked 2026-06-08: Dia is
-the default browser and was running, but the extension was not connected to this session —
-`list_connected_browsers` returned `[]`. The Connect step is the gate, not browser detection.)
+Never fold on the first empty result. `list_connected_browsers` only lists browsers that have *already*
+paired — to solicit a new connection you must call **`switch_browser`**, which broadcasts to every browser
+with the extension and waits ~2 min for the user to click **Connect**. Sequence: `browser-detect.sh` →
+`ensure` the primary is frontmost → `switch_browser` (tell the user to click Connect, in the same turn) →
+`list_connected_browsers` → `select_browser`. If `switch_browser` returns **"No other browsers available
+to switch to"**, no extension instance is reachable: installed/enabled/signed-in is not enough — the
+extension's browser-control connection must be live. Ask the user to open the extension and start/enable
+it (the service worker can be asleep), then retry. Or fall back to Codex `web`.
+
+> Diagnosed 2026-06-08: extension `fcoeoabgfenejglbffodgkkbkcdhcgfn` (name "Claude", v1.0.75) is installed
+> and not disabled in BOTH Dia and Chrome, Dia is the default browser and was running/focused, and the
+> account matched — yet `switch_browser` returned "No other browsers available" and `list_connected_browsers`
+> stayed `[]`. So the gate is the live extension connection, not install / enable / account / browser-detection.
 
 **Capabilities**: navigate, find, read_page / get_page_text, form_input, `computer` (click/type/scroll/
 screenshot), tabs create/close/context, javascript_tool, read_console_messages, read_network_requests,

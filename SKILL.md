@@ -50,15 +50,16 @@ Walk this top to bottom and **stop at the first match**:
 
 You drive the browser yourself through the `Claude in Chrome` MCP tools — no script, no delegation. The extension works in **any Chromium browser** (Chrome, Dia, Arc, Brave, Edge), so never assume it's Chrome. Tools: `navigate`, `find`, `read_page`, `get_page_text`, `form_input`, `computer` (click / type / scroll / screenshot), `tabs_create_mcp` / `tabs_close_mcp` / `tabs_context_mcp`, `javascript_tool`, `read_console_messages`, `read_network_requests`, `file_upload`, `browser_batch`.
 
-**Check availability — primary browser + existing instances, and retry before giving up.** Never fold on a single empty result:
+**Check availability — primary browser + existing instances, and actively pair before giving up.** Never fold on a single empty result:
 
 1. **Existing instances first** — `list_connected_browsers`.
    - Non-empty → `select_browser` (prefer one on this computer; if several, the system default — `browser-detect.sh` flags which). Then act.
-2. **Empty on the first try → do NOT stop:**
-   - a. `{base}/scripts/browser-detect.sh` — shows which Chromium browsers are installed, **running**, and the system **default** (the extension may live in Dia / Arc / Brave / Edge, not Chrome).
-   - b. Bring the primary frontmost — `{base}/scripts/browser-detect.sh ensure` (the default Chromium), or `ensure "Dia"` for a specific running browser the extension may be in.
-   - c. **Re-run `list_connected_browsers`, retrying up to ~3 times** — the extension can take a moment to register after its browser is focused or launched.
-3. **Still empty after retries** → only now ask the user to click the **Claude for Chrome** extension in the relevant browser and **Connect** it to this session (and confirm it's signed into this session's account), or fall back to Codex `web`.
+2. **Empty → do NOT stop:**
+   - a. `{base}/scripts/browser-detect.sh` — which Chromium browsers are installed, **running**, and the system **default** (the extension may live in Dia / Arc / Brave / Edge, not Chrome).
+   - b. Bring the primary frontmost — `{base}/scripts/browser-detect.sh ensure` (default Chromium), or `ensure "Dia"` for a specific running browser.
+   - c. **`switch_browser`** — the *active* step. `list_connected_browsers` only shows *already-paired* browsers; `switch_browser` broadcasts a pairing request to every browser with the extension and waits up to ~2 min for the user to click **Connect**. Tell the user to watch for the Connect prompt. (Emit your instruction in the SAME turn as the call, so they can click while it waits.)
+   - d. On success → `list_connected_browsers`, then `select_browser`, then act.
+3. **`switch_browser` returns "No other browsers available"** → no extension instance is reachable. The extension may be installed and signed-in yet have no live browser-control connection. Ask the user to **open the Claude for Chrome extension** and start/enable its connection (the background service worker can be dormant — opening the popup wakes it; confirm it's the same account), then retry from 2c. Or fall back to Codex `web`.
 
 Then act directly. Prefer `read_page` / `get_page_text` for reading, `form_input` or `computer` for acting, `browser_batch` to chain steps efficiently. **Permission rules still apply**: don't submit forms, accept terms/consent, grant OAuth, or click irreversible controls (send / publish / delete / purchase) without Sir's explicit go-ahead.
 
