@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # codex-cu.sh — Bridge Claude Code to Codex Computer Use (and the in-app Browser).
 #
+# The Codex wrapper is adapted from tomc98/claude-code-codex-skill by Thomas Csere (MIT).
+# https://github.com/tomc98/claude-code-codex-skill
+#
 # Codex (GPT-5.x) can drive a UI three ways via bundled plugins:
 #   - gui   → full macOS desktop control (computer-use@openai-bundled, the Sky CUA MCP server)
 #   - web   → the in-app Browser for local/dev pages (browser@openai-bundled)

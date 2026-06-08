@@ -32,7 +32,7 @@ Engine B is a bridge to OpenAI Codex. The wrapper at `scripts/codex-cu.sh` drive
 ## Installation
 
 ```bash
-git clone https://github.com/justinwilliames/claude-codex-computer-control ~/.claude/skills/computer-control
+git clone https://github.com/justinwilliames/claude-codex-computer-control-skill ~/.claude/skills/computer-control
 ```
 
 ## Usage
@@ -60,6 +60,10 @@ scripts/codex-cu.sh web "Open localhost:3000, run checkout, screenshot any error
 - `scripts/codex-cu.sh` — the Codex-engine wrapper
 - `scripts/browser-detect.sh` — finds the primary / running Chromium browser for Claude in Chrome
 - `references/setup.md` — Codex plugin install, macOS permissions, the verified CLI gotchas
+
+## Credits
+
+The Codex wrapper (`scripts/codex-cu.sh`) is adapted from [tomc98/claude-code-codex-skill](https://github.com/tomc98/claude-code-codex-skill) by Thomas Csere (MIT).
 
 ## License
 
