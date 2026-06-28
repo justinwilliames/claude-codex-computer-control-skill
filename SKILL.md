@@ -19,7 +19,7 @@ The single entry point for **driving a screen** — a web page, a browser, or a 
 
 Walk this top to bottom and **stop at the first match**:
 
-1. **Scriptable with no visual judgement?** (toggle a setting, open an app, read a value AppleScript exposes, a one-liner) → **`osascript`** via the `Control your Mac` tool. Cheapest and most reliable. Don't drive a GUI for what a script does deterministically.
+1. **Scriptable with no visual judgement?** (toggle a setting, open an app, read a value AppleScript exposes, a one-liner, **OR drive a native file open/save panel to a KNOWN path**) → **`osascript`** via the `Control your Mac` tool. Cheapest and most reliable. Don't drive a GUI for what a script does deterministically. *(File picker: `activate` the owning browser so it's frontmost, then System Events `keystroke "g" using {command down, shift down}` → type the path → Return → Return. Flaky ~50% on first pass — re-trigger the picker and retry. Beats Codex `gui` for pickers: no model round-trip, no usage limit, no MCP flood. Proven 2026-06-25.)*
 
 2. **A native macOS app — not a browser?** (Keynote, Xcode, Finder, Music, Mail.app, Preview, a menu-bar app, a copy-between-apps flow) → **Codex `gui`**. It is the *only* engine that can touch non-browser apps. It seizes the real screen → **explicit user intent only**, run in background, Esc cancels.
 
