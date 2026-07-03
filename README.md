@@ -1,3 +1,5 @@
+> **⚠️ Moved (2026-07-03):** now maintained in github.com/justinwilliames/claude-skills (computer-control/) — this repo is archived.
+
 # computer-control
 
 A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that **routes any screen-driving task to the right engine, then uses it**. It covers web automation, browser control, and native macOS app control — and decides between them rather than defaulting to one.
