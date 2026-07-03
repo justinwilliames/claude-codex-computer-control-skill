@@ -88,7 +88,9 @@ This engine is a **bridge to OpenAI Codex**: the `{base}/scripts/codex-cu.sh` wr
 **Flags (gui/web/resume):** `--dir`, `--model`, `--effort`, `--image`, `--dry-run`. `--dry-run` prints the exact `codex exec` command without running it — use it to preview a `gui` run before it touches the screen.
 
 ### ⚠️ `gui` controls the real screen
-Not headless — it moves the cursor, types, and screenshots **Sir's actual desktop** (a "Codex is using your computer / Esc to cancel" overlay shows). Therefore: only on explicit intent, never speculatively; always `run_in_background=True` so Sir keeps control; prefer Claude in Chrome or Codex `web` for anything that's just a web page.
+Not headless — it moves the cursor, types, and screenshots **Justin's actual desktop** (a "Codex is using your computer / Esc to cancel" overlay shows). Therefore: only on explicit intent, never speculatively; always `run_in_background=True` so Justin keeps control; prefer Claude in Chrome or Codex `web` for anything that's just a web page.
+
+**Escalation — stalled or looping `gui` run:** if a `gui` run shows no visible progress for 60 seconds (the overlay is static, `output.log` isn't growing, or the output looks like it's repeating the same step), abort: send Esc via osascript or kill the codex process, report partial state to the user (paste whatever appeared in `output.log`), and ask before retrying. Never let a looping gui run churn indefinitely on the real screen.
 
 ### One-time setup for `gui`
 `computer_use` being on as a *feature flag* is not enough — the **plugin** must be installed. Run `{base}/scripts/codex-cu.sh check`; if `computer-use` shows `not-installed`, run `check --install`, then grant **Accessibility + Screen Recording** to "Codex Computer Use" and clear first-run consent in one interactive `codex` session. Full detail and gotchas in `references/setup.md`.
@@ -115,3 +117,7 @@ If anything breaks, fix the skill files directly — you may edit anything under
 - `references/setup.md` — Codex plugin install, macOS permissions, troubleshooting
 
 Verify any Codex CLI change against the installed binary before trusting it — Codex's own advice on its flags has been wrong (`codex exec` rejects `-a`; the correct control is `-c approval_policy="never"`). For the Claude-in-Chrome side, confirm a browser is connected with `list_connected_browsers` before assuming the engine is available.
+
+## Sync homes
+
+Canonical: ~/code/claude-codex-computer-control/SKILL.md • Live: ~/.claude/skills/computer-control/SKILL.md. Check diff before editing either.
